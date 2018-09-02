@@ -19,7 +19,7 @@ class Main:
             action_size=self.action_size
         )
 
-        self.scores = deque(maxlen=200)
+        self.scores = deque(maxlen=100)
 
     def run(self):
         for episode_number in range(self.max_episodes):

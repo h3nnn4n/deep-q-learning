@@ -15,12 +15,12 @@ class DeepQAgent:
         self.state_size = state_size
         self.action_size = action_size
 
-        self.memory = deque(maxlen=1000)
+        self.memory = deque(maxlen=2000)
 
         self.batch_size = 64
 
         self.epsilon_start = 1.0
-        self.epsilon_end = 0.01
+        self.epsilon_end = 0.001
         self.epsilon_decay = 0.995
 
         self.alpha = 0.001
@@ -31,8 +31,8 @@ class DeepQAgent:
 
     def build_model(self):
         model = Sequential()
-        model.add(Dense(30, input_dim=self.state_size, activation='relu'))
-        model.add(Dense(30, activation='relu'))
+        model.add(Dense(20, input_dim=self.state_size, activation='relu'))
+        model.add(Dense(20, activation='relu'))
         # model.add(Dense(10, activation='relu'))
         # model.add(Dense(10, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
