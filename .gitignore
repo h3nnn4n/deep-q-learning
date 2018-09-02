@@ -1,2 +1,2 @@
-src/__pycache__/random_agent.cpython-36.pyc
-src/__pycache__/deep_q_agent.cpython-36.pyc
+.*.sw?
+__pycache__
