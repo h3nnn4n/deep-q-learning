@@ -7,7 +7,7 @@ from collections import deque
 
 class Main:
     def __init__(self):
-        self.max_episodes = 2000
+        self.max_episodes = 10000
 
         self.env = gym.make('CartPole-v1')
 

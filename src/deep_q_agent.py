@@ -17,10 +17,10 @@ class DeepQAgent:
 
         self.memory = deque(maxlen=2000)
 
-        self.batch_size = 64
+        self.batch_size = 128
 
         self.epsilon_start = 1.0
-        self.epsilon_end = 0.001
+        self.epsilon_end = 0.01
         self.epsilon_decay = 0.995
 
         self.alpha = 0.001
@@ -31,9 +31,9 @@ class DeepQAgent:
 
     def build_model(self):
         model = Sequential()
-        model.add(Dense(20, input_dim=self.state_size, activation='relu'))
+        model.add(Dense(10, input_dim=self.state_size, activation='relu'))
         model.add(Dense(20, activation='relu'))
-        # model.add(Dense(10, activation='relu'))
+        model.add(Dense(20, activation='relu'))
         # model.add(Dense(10, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
         model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=self.alpha))
@@ -53,9 +53,9 @@ class DeepQAgent:
 
     def learn(self):
         if len(self.memory) < self.batch_size:
-            batch = self.memory
-        else:
-            batch = random.sample(self.memory, k=self.batch_size)
+            return
+
+        batch = random.sample(self.memory, k=self.batch_size)
 
         for state, action, reward, next_state, done in batch:
             target = reward
