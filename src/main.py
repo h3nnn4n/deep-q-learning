@@ -16,7 +16,8 @@ class Main:
 
         self.agent = DeepQAgent(
             state_size=self.state_size,
-            action_size=self.action_size
+            action_size=self.action_size,
+            fixed_target=True
         )
 
         self.scores = deque(maxlen=100)
@@ -34,6 +35,8 @@ class Main:
                 self.agent.record(state, action, reward, next_state, done)
                 state = next_state
                 total_reward += reward
+
+                # self.agent.learn()
 
             self.agent.learn()
 
