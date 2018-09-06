@@ -11,13 +11,15 @@ from collections import deque
 
 
 class DeepQAgent:
-    def __init__(self, state_size=None, action_size=None):
+    def __init__(self, state_size=None, action_size=None, fixed_target=False):
         self.state_size = state_size
         self.action_size = action_size
 
+        self.fixed_target = fixed_target
+
         self.memory = deque(maxlen=2000)
 
-        self.batch_size = 128
+        self.batch_size = 32
 
         self.epsilon_start = 1.0
         self.epsilon_end = 0.01
@@ -28,12 +30,13 @@ class DeepQAgent:
         self.gamma = 0.95
 
         self.model = self.build_model()
+        self.target_model = self.build_model() if self.fixed_target else None
 
     def build_model(self):
         model = Sequential()
-        model.add(Dense(10, input_dim=self.state_size, activation='relu'))
+        model.add(Dense(20, input_dim=self.state_size, activation='relu'))
         model.add(Dense(20, activation='relu'))
-        model.add(Dense(20, activation='relu'))
+        # model.add(Dense(20, activation='relu'))
         # model.add(Dense(10, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
         model.compile(loss='mse', optimizer=keras.optimizers.Adam(lr=self.alpha))
@@ -52,6 +55,8 @@ class DeepQAgent:
         self.memory.append((state, action, reward, next_state, done))
 
     def learn(self):
+        target_model = self.target_model if self.fixed_target else self.model
+
         if len(self.memory) < self.batch_size:
             return
 
@@ -62,10 +67,10 @@ class DeepQAgent:
 
             if not done:
                 target = reward + self.gamma * np.amax(
-                    self.model.predict(next_state)[0]
+                    target_model.predict(next_state)[0]
                 )
 
-            target_f = self.model.predict(state)
+            target_f = target_model.predict(state)
             target_f[0][action] = target
             self.model.fit(
                 state,
@@ -75,6 +80,16 @@ class DeepQAgent:
             )
 
         self.update_epsilon()
+
+    def update_target(self):
+        # I think we can just copy over
+        weights = self.model.get_weights()
+        target_weights = self.target_model.get_weights()
+
+        for i in range(len(target_weights)):
+            target_weights[i] = weights[i]
+
+        self.target_model.set_weights(target_weights)
 
     def update_epsilon(self):
         if self.epsilon > self.epsilon_end:
