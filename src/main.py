@@ -1,3 +1,4 @@
+import sys
 import gym
 import numpy as np
 from random_agent import RandomAgent
@@ -21,6 +22,7 @@ class Main:
         )
 
         self.scores = deque(maxlen=100)
+        self.max_score = 0
 
     def run(self):
         for episode_number in range(self.max_episodes):
@@ -36,16 +38,22 @@ class Main:
                 state = next_state
                 total_reward += reward
 
-                # self.agent.learn()
+                self.agent.learn()
 
-            self.agent.learn()
+            # self.agent.learn()
+            self.agent.update_epsilon()
 
             self.scores.append(total_reward)
-            print('%6d %8.2f %8.2f' % (
+            self.max_score = max(self.max_score, total_reward)
+            print('%6d %8.2f %8.2f %8.2f %8.2f' % (
                 episode_number + 1,
                 np.mean(self.scores),
-                total_reward)
+                total_reward,
+                self.max_score,
+                self.agent.epsilon)
             )
+
+            sys.stdout.flush()
 
 
 if __name__ == '__main__':

@@ -19,17 +19,16 @@ class DeepQAgent:
 
         self.memory = deque(maxlen=2000)
 
-        self.batch_size = 64
+        self.batch_size = 16
 
         self.epsilon_start = 1.0
         self.epsilon_end = 0.01
         self.epsilon_decay = 0.9975
 
-        self.alpha = 0.001
+        self.alpha = 0.0001
         self.epsilon = self.epsilon_start
-        self.gamma = 0.95
-        self.tau_iters = 10
-        self.tau_count = 0
+        self.gamma = 0.99
+        self.tau = 0.005
 
         self.model = self.build_model()
         self.target_model = self.build_model() if self.fixed_target else None
@@ -84,22 +83,15 @@ class DeepQAgent:
                 verbose=0
             )
 
-        self.update_epsilon()
-
     def update_target(self):
-        if self.tau_count < self.tau_iters:
-            self.tau_count += 1
-            return
-
-        self.tau_count = 0
-        print('Updated model')
-
-        # I think we can just copy over
         weights = self.model.get_weights()
         target_weights = self.target_model.get_weights()
 
         for i in range(len(target_weights)):
-            target_weights[i] = weights[i]
+            target_weights[i] = (
+                self.tau * weights[i] +
+                (1.0 - self.tau) * target_weights[i]
+            )
 
         self.target_model.set_weights(target_weights)
 

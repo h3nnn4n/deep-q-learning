@@ -1,2 +1,5 @@
 .*.sw?
 __pycache__
+src/out.png
+src/log
+.DS_Store
