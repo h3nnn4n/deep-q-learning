@@ -25,6 +25,8 @@ class Main:
         self.max_score = 0
 
     def run(self):
+        self.agent.save_model()
+
         for episode_number in range(self.max_episodes):
             state = self.env.reset()
 
@@ -54,6 +56,16 @@ class Main:
             )
 
             sys.stdout.flush()
+
+            if (episode_number + 1) % 10 == 0:
+                self.agent.save(
+                    extra='__%06d_%08.2f_%08.2f_%08.2f' % (
+                        episode_number + 1,
+                        np.median(self.scores),
+                        total_reward,
+                        self.max_score
+                    )
+                )
 
 
 if __name__ == '__main__':

@@ -3,3 +3,5 @@ __pycache__
 src/out.png
 src/log
 .DS_Store
+*.json
+*h5

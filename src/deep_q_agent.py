@@ -1,4 +1,6 @@
 import random
+import datetime
+import string
 import numpy as np
 
 import keras
@@ -32,6 +34,12 @@ class DeepQAgent:
 
         self.model = self.build_model()
         self.target_model = self.build_model() if self.fixed_target else None
+
+        self.name = 'dqn'
+        if self.fixed_target:
+            self.name += '_fixed_target'
+
+        self.r_string = None
 
     def build_model(self):
         model = Sequential()
@@ -103,3 +111,36 @@ class DeepQAgent:
 
     def reshape(self, state):
         return np.reshape(state, (1, self.state_size))
+
+    def save(self, extra=''):
+        extra = self.get_suffix() + extra
+        base_name_wights = 'model_weights_%s.h5' % extra
+
+        self.target_model.save_weights(base_name_wights)
+
+    def save_model(self):
+        extra = self.get_suffix()
+        base_name_model = 'model_%s.json' % extra
+
+        with open(base_name_model, 'w') as f:
+            f.write(self.target_model.to_json())
+
+    def get_suffix(self):
+        now = datetime.datetime.now()
+        char_set = string.ascii_uppercase + string.digits
+
+        if self.r_string is None:
+            self.r_string = ''.join(random.sample(char_set * 6, 6))
+
+        suffix = "_%s_%04d_%02d_%02d__%02d_%02d_%02d__%s" % (
+            self.name,
+            now.year,
+            now.month,
+            now.day,
+            now.hour,
+            now.minute,
+            now.second,
+            self.r_string
+        )
+
+        return suffix
