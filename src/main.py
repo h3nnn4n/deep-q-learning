@@ -24,8 +24,10 @@ class Main:
         self.scores = deque(maxlen=100)
         self.max_score = 0
 
+        self.agent.on_init()
+
     def run(self):
-        self.agent.save_model()
+        self.agent.on_start()
 
         for episode_number in range(self.max_episodes):
             state = self.env.reset()
@@ -36,23 +38,20 @@ class Main:
             while not done:
                 action = self.agent.get_action(state)
                 next_state, reward, done, _ = self.env.step(action)
-                self.agent.record(state, action, reward, next_state, done)
+                self.agent.on_step(state, action, reward, next_state, done)
+
                 state = next_state
                 total_reward += reward
 
-                self.agent.learn()
-
-            # self.agent.learn()
-            self.agent.update_epsilon()
+            self.agent.on_end()
 
             self.scores.append(total_reward)
             self.max_score = max(self.max_score, total_reward)
-            print('%6d %8.2f %8.2f %8.2f %8.2f' % (
+            print('%6d %8.2f %8.2f %8.2f' % (
                 episode_number + 1,
                 np.mean(self.scores),
                 total_reward,
-                self.max_score,
-                self.agent.epsilon)
+                self.max_score,)
             )
 
             sys.stdout.flush()

@@ -11,8 +11,10 @@ from keras.layers import Dense
 
 from collections import deque
 
+from base_ai import BaseAI
 
-class DeepQAgent:
+
+class DeepQAgent(BaseAI):
     def __init__(self, state_size=None, action_size=None, fixed_target=False):
         self.state_size = state_size
         self.action_size = action_size
@@ -40,6 +42,16 @@ class DeepQAgent:
             self.name += '_fixed_target'
 
         self.r_string = None
+
+    def on_start(self):
+        self.save_model()
+
+    def on_step(self, state, action, reward, next_state, done):
+        self.record(state, action, reward, next_state, done)
+        self.learn()
+
+    def on_end(self):
+        self.update_epsilon()
 
     def build_model(self):
         model = Sequential()

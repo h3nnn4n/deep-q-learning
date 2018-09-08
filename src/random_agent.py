@@ -1,7 +1,8 @@
 import random
+from base_ai import BaseAI
 
 
-class RandomAgent:
+class RandomAgent(BaseAI):
     def __init__(self, state_size=None, action_size=None):
         self.state_size = state_size
         self.action_size = action_size
